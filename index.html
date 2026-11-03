@@ -7,168 +7,371 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Crocs Tracker">
 <title>Crocs Hours Tracker</title>
+
 <style>
 *{box-sizing:border-box}
-:root{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#182238;background:#f4f6fa}
+:root{
+ font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+ color:#182238;background:#f4f6fa
+}
 html,body{margin:0;width:100%;overflow-x:hidden}
-main{width:100%;max-width:680px;margin:auto;padding:calc(env(safe-area-inset-top) + 65px) 16px calc(env(safe-area-inset-bottom) + 50px)}
+main{
+ width:100%;max-width:680px;margin:auto;
+ padding:calc(env(safe-area-inset-top) + 65px) 16px calc(env(safe-area-inset-bottom) + 50px)
+}
 header{margin-bottom:20px}
 h1{font-size:25px;line-height:1.25;margin:0 0 7px}
 h2{font-size:19px;margin:0 0 20px}
+h3{font-size:16px;margin:0}
 .muted{color:#68748a;font-size:13px}
-.pill{display:inline-block;background:#def5e8;color:#167246;border-radius:30px;padding:7px 12px;font-size:12px;margin-top:12px}
-.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin-bottom:18px}
-.stat{background:#192235;color:white;border-radius:15px;padding:15px 10px;min-width:0}
+.pill{
+ display:inline-block;background:#def5e8;color:#167246;
+ border-radius:30px;padding:7px 12px;font-size:12px;margin-top:12px
+}
+.stats{
+ display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
+ gap:9px;margin-bottom:18px
+}
+.stat{
+ background:#192235;color:white;border-radius:15px;
+ padding:15px 10px;min-width:0
+}
 .stat span{display:block;color:#c5cfdf;font-size:12px}
-.stat strong{display:block;font-size:clamp(16px,4.5vw,24px);margin-top:8px;overflow-wrap:anywhere}
-.card{background:white;border:1px solid #e0e5ee;border-radius:20px;padding:20px 17px;margin-bottom:18px;width:100%;min-width:0}
+.stat strong{
+ display:block;font-size:clamp(16px,4.5vw,24px);
+ margin-top:8px;overflow-wrap:anywhere
+}
+.card{
+ background:white;border:1px solid #e0e5ee;border-radius:20px;
+ padding:20px 17px;margin-bottom:18px;width:100%;min-width:0
+}
 .field{margin-bottom:17px;width:100%;min-width:0}
 label{display:block;font-size:14px;font-weight:650;margin-bottom:9px}
-input,select{display:block;width:100%;min-width:0;max-width:100%;height:54px;border:1px solid #ccd5e3;border-radius:12px;padding:10px 12px;font-family:inherit;font-size:16px;color:#182238;background:white;box-sizing:border-box}
+input,select{
+ display:block;width:100%;min-width:0;max-width:100%;height:54px;
+ border:1px solid #ccd5e3;border-radius:12px;padding:10px 12px;
+ font-family:inherit;font-size:16px;color:#182238;background:white
+}
 input:focus,select:focus{outline:2px solid #9db7f4;border-color:#3563d5}
-input[type="date"],input[type="time"]{-webkit-appearance:none;appearance:none;text-align:center}
-input[type="date"]::-webkit-date-and-time-value,input[type="time"]::-webkit-date-and-time-value{text-align:center;min-height:1.5em}
-input[type="date"]::-webkit-datetime-edit,input[type="time"]::-webkit-datetime-edit{width:100%;text-align:center}
-.time-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:0}
-.filter-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:0}
-.preview{background:#edf4ff;padding:16px;border-radius:14px;margin:8px 0 19px}
+input[type="date"],input[type="time"]{
+ -webkit-appearance:none;appearance:none;text-align:center
+}
+input[type="date"]::-webkit-date-and-time-value,
+input[type="time"]::-webkit-date-and-time-value{
+ text-align:center;min-height:1.5em
+}
+input[type="date"]::-webkit-datetime-edit,
+input[type="time"]::-webkit-datetime-edit{
+ width:100%;text-align:center
+}
+.time-grid,.filter-grid{
+ display:grid;grid-template-columns:minmax(0,1fr);gap:0
+}
+.preview{
+ background:#edf4ff;padding:16px;border-radius:14px;
+ margin:8px 0 19px
+}
 .preview small{display:block;color:#64748b;margin-bottom:7px}
 .preview strong{font-size:19px;line-height:1.5}
-button{font:inherit;cursor:pointer;border:0;border-radius:12px;padding:13px 14px;font-weight:650;min-height:48px}
+button{
+ font:inherit;cursor:pointer;border:0;border-radius:12px;
+ padding:13px 14px;font-weight:650;min-height:48px
+}
 .primary{background:#3156c8;color:white;width:100%}
 .secondary{background:#e9eef8;color:#233759}
 .danger{background:#fff0ef;color:#b42318}
+.success{background:#def5e8;color:#167246}
 .buttons{display:flex;flex-wrap:wrap;gap:9px}
 .buttons button{flex:1 1 130px}
 #notice{font-size:13px;color:#167246;margin-top:12px;min-height:16px}
-.record{border-top:1px solid #e9edf3;padding:15px 0;display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.record{
+ border-top:1px solid #e9edf3;padding:15px 0;
+ display:flex;justify-content:space-between;gap:10px;align-items:flex-start
+}
 .record-title{font-weight:700;font-size:14px}
-.record-detail{font-size:12px;color:#68748a;line-height:1.7;margin-top:5px;overflow-wrap:anywhere}
+.record-detail{
+ font-size:12px;color:#68748a;line-height:1.7;
+ margin-top:5px;overflow-wrap:anywhere
+}
 .record-right{text-align:right;flex-shrink:0}
 .record-pay{font-weight:750}
 .mini{display:flex;gap:6px;justify-content:flex-end;margin-top:8px}
 .mini button{font-size:12px;min-height:32px;padding:7px 9px;border-radius:8px}
 .footer{color:#68748a;font-size:12px;line-height:1.7}
 [hidden]{display:none!important}
+
+/* Monthly salary */
+.salary-summary{
+ display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+ gap:9px;margin-bottom:18px
+}
+.summary-box{
+ background:#f4f6fa;border-radius:13px;padding:13px;min-width:0
+}
+.summary-box span{display:block;font-size:12px;color:#68748a}
+.summary-box strong{
+ display:block;font-size:19px;margin-top:7px;
+ overflow-wrap:anywhere
+}
+.month-card{
+ border:1px solid #e5e9f0;border-radius:14px;
+ padding:15px;margin-bottom:11px
+}
+.month-top{
+ display:flex;justify-content:space-between;
+align-items:flex-start;gap:10px
+}
+.month-name{font-weight:750;font-size:15px}
+.month-amount{font-size:18px;font-weight:800;text-align:right}
+.month-info{
+ font-size:12px;color:#68748a;margin-top:6px;line-height:1.7
+}
+.status{
+ display:inline-block;font-size:11px;font-weight:700;
+ border-radius:20px;padding:5px 9px;margin-top:9px
+}
+.status.paid{background:#def5e8;color:#167246}
+.status.unpaid{background:#fff3d9;color:#946200}
+.month-actions{display:flex;gap:7px;margin-top:12px}
+.month-actions button{
+ min-height:36px;padding:8px 12px;font-size:12px;flex:1
+}
+.month-actions button:disabled{opacity:.45;cursor:not-allowed}
+.year-total{
+ background:#192235;color:white;border-radius:15px;padding:17px;
+ margin-top:15px
+}
+.year-total .muted{color:#c5cfdf}
+.year-total strong{font-size:25px;display:block;margin:7px 0}
+.year-total-grid{
+ display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px
+}
+.year-total-grid span{font-size:11px;color:#c5cfdf}
+.year-total-grid strong{font-size:15px;margin:5px 0 0}
+.payment-date{
+ font-size:12px;color:#167246;margin-top:5px
+}
 @media(max-width:380px){
-main{padding-left:12px;padding-right:12px}
-.card{padding:18px 13px}
-.stat{padding:12px 8px}
-h1{font-size:23px}
+ main{padding-left:12px;padding-right:12px}
+ .card{padding:18px 13px}
+ .stat{padding:12px 8px}
+ h1{font-size:23px}
+ .month-card{padding:12px}
 }
 @media(min-width:700px){
-main{padding-top:50px}
-.time-grid,.filter-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+ main{padding-top:50px}
+ .time-grid,.filter-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
 }
 </style>
 </head>
+
 <body>
 <main>
+
 <header>
 <h1>🐊 Crocs Hours Tracker</h1>
 <div class="muted">Part-time salary & working logbook</div>
 <span class="pill">RM10 / hour</span>
 </header>
 
+<!-- MAIN STATISTICS -->
 <div class="stats">
-<div class="stat"><span>Days</span><strong id="days">0</strong></div>
-<div class="stat"><span>Hours</span><strong id="hours">0</strong></div>
-<div class="stat"><span>Salary</span><strong id="salary">RM0.00</strong></div>
+ <div class="stat">
+  <span>Days</span>
+  <strong id="days">0</strong>
+ </div>
+ <div class="stat">
+  <span>Hours</span>
+  <strong id="hours">0</strong>
+ </div>
+ <div class="stat">
+  <span>Salary</span>
+  <strong id="salary">RM0.00</strong>
+ </div>
 </div>
 
+<!-- WORKING HOURS -->
 <section class="card">
 <h2>Working Hours</h2>
+
 <form id="form">
-<div class="field">
-<label for="date">Work Date</label>
-<input type="date" id="date" required>
-</div>
-<div class="time-grid">
-<div class="field">
-<label for="start">Clock In</label>
-<input type="time" id="start" value="09:00" required>
-</div>
-<div class="field">
-<label for="end">Clock Out</label>
-<input type="time" id="end" value="22:00" required>
-</div>
-</div>
-<div class="field">
-<label for="break">Break Duration (minutes)</label>
-<input type="number" id="break" value="120" min="0" max="1440" step="1" required>
-</div>
-<div class="preview">
-<small>Calculated working time & salary</small>
-<strong id="estimate">11 hours · RM110.00</strong>
-</div>
-<div class="buttons">
-<button type="submit" class="primary" id="save">Save Work Day</button>
-<button type="button" class="secondary" id="cancel" hidden>Cancel Edit</button>
-</div>
-<div id="notice" role="status"></div>
+ <div class="field">
+  <label for="date">Work Date</label>
+  <input type="date" id="date" required>
+ </div>
+
+ <div class="time-grid">
+  <div class="field">
+   <label for="start">Clock In</label>
+   <input type="time" id="start" value="09:00" required>
+  </div>
+  <div class="field">
+   <label for="end">Clock Out</label>
+   <input type="time" id="end" value="22:00" required>
+  </div>
+ </div>
+
+ <div class="field">
+  <label for="break">Break Duration (minutes)</label>
+  <input type="number" id="break" value="120" min="0" max="1440" step="1" required>
+ </div>
+
+ <div class="preview">
+  <small>Calculated working time & salary</small>
+  <strong id="estimate">11 hours · RM110.00</strong>
+ </div>
+
+ <div class="buttons">
+  <button type="submit" class="primary" id="save">Save Work Day</button>
+  <button type="button" class="secondary" id="cancel" hidden>Cancel Edit</button>
+ </div>
+ <div id="notice" role="status"></div>
 </form>
 </section>
 
+<!-- MONTHLY SALARY BREAKDOWN -->
+<section class="card">
+ <h2>Monthly Salary Breakdown</h2>
+
+ <div class="field">
+  <label for="salaryYear">Select Year</label>
+  <select id="salaryYear"></select>
+ </div>
+
+ <div class="salary-summary">
+  <div class="summary-box">
+   <span>Total Salary Earned</span>
+   <strong id="yearEarned">RM0.00</strong>
+  </div>
+  <div class="summary-box">
+   <span>Total Salary Received</span>
+   <strong id="yearReceived">RM0.00</strong>
+  </div>
+  <div class="summary-box">
+   <span>Outstanding Salary</span>
+   <strong id="yearOutstanding">RM0.00</strong>
+  </div>
+  <div class="summary-box">
+   <span>Paid Months</span>
+   <strong id="yearPaidMonths">0 / 12</strong>
+  </div>
+ </div>
+
+ <div id="monthlyRecords"></div>
+
+ <div class="year-total">
+  <div class="muted">Yearly Salary Summary</div>
+  <strong id="yearTotal">RM0.00</strong>
+  <div class="year-total-grid">
+   <div>
+    <span>Total Working Hours</span>
+    <strong id="yearHours">0</strong>
+   </div>
+   <div>
+    <span>Total Working Days</span>
+    <strong id="yearDays">0</strong>
+   </div>
+  </div>
+ </div>
+</section>
+
+<!-- WORK HISTORY -->
 <section class="card">
 <h2>Work History</h2>
+
 <div class="filter-grid">
 <div class="field">
-<label for="filterMonth">Filter Month</label>
-<select id="filterMonth">
-<option value="01">January</option>
-<option value="02">February</option>
-<option value="03">March</option>
-<option value="04">April</option>
-<option value="05">May</option>
-<option value="06">June</option>
-<option value="07">July</option>
-<option value="08">August</option>
-<option value="09">September</option>
-<option value="10">October</option>
-<option value="11">November</option>
-<option value="12">December</option>
-</select>
+  <label for="filterMonth">Filter Month</label>
+  <select id="filterMonth">
+   <option value="01">January</option>
+   <option value="02">February</option>
+   <option value="03">March</option>
+   <option value="04">April</option>
+   <option value="05">May</option>
+   <option value="06">June</option>
+   <option value="07">July</option>
+   <option value="08">August</option>
+   <option value="09">September</option>
+   <option value="10">October</option>
+   <option value="11">November</option>
+   <option value="12">December</option>
+  </select>
+ </div>
+
+ <div class="field">
+  <label for="filterYear">Filter Year</label>
+  <select id="filterYear"></select>
+ </div>
 </div>
+
 <div class="field">
-<label for="filterYear">Filter Year</label>
-<select id="filterYear"></select>
+ <label for="rate">Hourly Rate (RM)</label>
+ <input type="number" id="rate" value="10" min="0.01" step="0.01">
 </div>
-</div>
-<div class="field">
-<label for="rate">Hourly Rate (RM)</label>
-<input type="number" id="rate" value="10" min="0.01" step="0.01">
-</div>
+
 <div id="records"></div>
 </section>
 
+<!-- BACKUP -->
 <section class="card">
 <h2>Backup & Restore</h2>
+
 <div class="buttons">
-<button class="secondary" type="button" id="backup">Download Backup</button>
-<button class="secondary" type="button" id="restoreBtn">Restore Backup</button>
-<input type="file" id="restore" accept=".json,application/json" hidden>
-<button class="secondary" type="button" id="csv">Export CSV</button>
+ <button class="secondary" type="button" id="backup">Download Backup</button>
+ <button class="secondary" type="button" id="restoreBtn">Restore Backup</button>
+ <input type="file" id="restore" accept=".json,application/json" hidden>
+ <button class="secondary" type="button" id="csv">Export CSV</button>
 </div>
-<p class="footer">Records are saved in this browser. Download a backup to Files or iCloud Drive regularly. Clearing website data can erase saved records.</p>
+
+<p class="footer">
+ Records and payment statuses are saved in this browser.
+ Download a backup to Files or iCloud Drive regularly.
+ Clearing website data can erase saved records.
+</p>
 </section>
-<p class="footer">Salary excludes unpaid breaks, overtime premiums and statutory deductions.</p>
+
+<p class="footer">
+ Salary excludes unpaid breaks, overtime premiums and statutory deductions.
+ Payment dates are based on the actual date you receive your salary.
+</p>
+
 </main>
 
 <script>
 (()=>{
 "use strict";
+
 const KEY="crocs-mobile-hours-v1";
 const $=id=>document.getElementById(id);
+
+const MONTHS=[
+ "January","February","March","April","May","June",
+ "July","August","September","October","November","December"
+];
+
 const today=()=>{
  const d=new Date();
  return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
 };
-const money=n=>"RM"+n.toLocaleString("en-MY",{minimumFractionDigits:2,maximumFractionDigits:2});
-const fmt=n=>Number(n.toFixed(2)).toLocaleString("en-MY",{maximumFractionDigits:2});
-let entries=[],rate=10,editId=null;
+
+const money=n=>"RM"+Number(n||0).toLocaleString("en-MY",{
+ minimumFractionDigits:2,maximumFractionDigits:2
+});
+
+const fmt=n=>Number(n.toFixed(2)).toLocaleString("en-MY",{
+ maximumFractionDigits:2
+});
+
+let entries=[];
+let payments={};
+let rate=10;
+let editId=null;
+
 try{
  const saved=JSON.parse(localStorage.getItem(KEY)||"{}");
  entries=Array.isArray(saved.entries)?saved.entries:[];
+ payments=saved.payments&&typeof saved.payments==="object"
+  ?saved.payments:{};
  rate=Number(saved.rate)>0?Number(saved.rate):10;
 }catch(e){}
 
@@ -176,102 +379,385 @@ $("date").value=today();
 $("rate").value=rate;
 $("filterMonth").value=today().slice(5,7);
 
+/* YEAR SELECTORS */
+
 function populateYears(selected){
- const years=new Set([new Date().getFullYear(),2026,...entries.map(e=>Number(e.date.slice(0,4)))]);
- const current=new Date().getFullYear();
- for(let y=current-2;y<=current+5;y++)years.add(y);
+ const years=new Set([
+  new Date().getFullYear(),
+  2026,
+  ...entries.map(e=>Number(e.date.slice(0,4)))
+ ]);
+
+ for(let y=new Date().getFullYear()-2;y<=new Date().getFullYear()+5;y++){
+  years.add(y);
+ }
+
  years.add(Number(selected));
- $("filterYear").replaceChildren();
- [...years].filter(y=>Number.isInteger(y)&&y>=2000&&y<=2100).sort((a,b)=>b-a).forEach(y=>{
-  const option=document.createElement("option");
-  option.value=String(y);
-  option.textContent=String(y);
-  $("filterYear").append(option);
+
+ ["filterYear","salaryYear"].forEach(id=>{
+  const select=$(id);
+  const previous=String(selected);
+  select.replaceChildren();
+
+  [...years]
+   .filter(y=>Number.isInteger(y)&&y>=2000&&y<=2100)
+   .sort((a,b)=>b-a)
+   .forEach(y=>{
+    const option=document.createElement("option");
+    option.value=String(y);
+    option.textContent=String(y);
+    select.append(option);
+   });
+
+  select.value=previous;
  });
- $("filterYear").value=String(selected);
 }
+
 populateYears(Number(today().slice(0,4)));
 
+/* CALCULATION */
+
 function duration(a,b,br){
- if(!/^\d{2}:\d{2}$/.test(a)||!/^\d{2}:\d{2}$/.
-test(b))return NaN;
+ if(!/^\d{2}:\d{2}$/.test(a)||!/^\d{2}:\d{2}$/.test(b)){
+  return NaN;
+ }
+
  const [ah,am]=a.split(":").map(Number);
  const [bh,bm]=b.split(":").map(Number);
+
  if(ah>23||bh>23||am>59||bm>59)return NaN;
+
  let minutes=(bh*60+bm)-(ah*60+am);
+
  if(minutes<=0)minutes+=1440;
+
  return (minutes-Number(br))/60;
 }
+
 function persist(){
- localStorage.setItem(KEY,JSON.stringify({entries,rate}));
+ localStorage.setItem(KEY,JSON.stringify({
+  entries,
+  rate,
+  payments
+ }));
 }
+
 function calc(){
- const h=duration($("start").value,$("end").value,$("break").value);
- $("estimate").textContent=Number.isFinite(h)&&h>0
- ?fmt(h)+" hours · "+money(h*rate)
- :"Please check your times and break";
- return h;
+ const h=duration(
+  $("start").value,
+  $("end").value,
+  $("break").value
+ );
+
+ $("estimate").textContent=
+  Number.isFinite(h)&&h>0
+  ?fmt(h)+" hours · "+money(h*rate)
+  :"Please check your times and break";
+return h;
 }
+
+/* GET MONTH DATA */
+
+function getMonthData(year,month){
+ const key=year+"-"+String(month).padStart(2,"0");
+
+ const rows=entries.filter(e=>e.date.startsWith(key));
+
+ const hours=rows.reduce((sum,e)=>{
+  return sum+duration(e.start,e.end,e.break);
+ },0);
+
+ const days=new Set(rows.map(e=>e.date)).size;
+
+ const earned=hours*rate;
+ const payment=payments[key]||null;
+ const paid=!!(payment&&payment.paid);
+
+ return{
+  key,rows,hours,days,earned,
+  payment,paid,
+  received:paid?Number(payment.amount||0):0,
+  outstanding:paid?0:earned
+ };
+}
+
+/* MONTHLY SALARY BREAKDOWN */
+
+function renderMonthly(){
+ const year=Number($("salaryYear").value);
+ const root=$("monthlyRecords");
+
+ root.replaceChildren();
+
+ let totalEarned=0;
+ let totalReceived=0;
+ let totalOutstanding=0;
+ let totalHours=0;
+ let totalDays=0;
+ let paidMonths=0;
+
+ MONTHS.forEach((month,index)=>{
+  const data=getMonthData(year,index+1);
+
+  totalEarned+=data.earned;
+  totalReceived+=data.received;
+  totalOutstanding+=data.outstanding;
+  totalHours+=data.hours;
+  totalDays+=data.days;
+
+  if(data.paid)paidMonths++;
+
+  const card=document.createElement("div");
+  card.className="month-card";
+
+  const top=document.createElement("div");
+  top.className="month-top";
+
+  const left=document.createElement("div");
+
+  const name=document.createElement("div");
+  name.className="month-name";
+  name.textContent=month+" "+year;
+
+  const info=document.createElement("div");
+  info.className="month-info";
+  info.textContent=
+   data.days+" working days · "+
+   fmt(data.hours)+" hours";
+
+  left.append(name,info);
+
+  const amount=document.createElement("div");
+  amount.className="month-amount";
+  amount.textContent=money(data.earned);
+
+  top.append(left,amount);
+
+  const status=document.createElement("div");
+  status.className="status "+(data.paid?"paid":"unpaid");
+  status.textContent=data.paid?"PAID":"UNPAID";
+
+  card.append(top,status);
+
+  if(data.paid&&data.payment){
+   const date=document.createElement("div");
+   date.className="payment-date";
+   date.textContent="Received on "+data.payment.date+
+    " · "+money(data.payment.amount);
+   card.append(date);
+  }
+
+  const actions=document.createElement("div");
+  actions.className="month-actions";
+
+  if(data.paid){
+   const undo=document.createElement("button");
+   undo.className="secondary";
+   undo.textContent="Undo Payment";
+
+   undo.onclick=()=>undoPayment(data.key);
+
+   actions.append(undo);
+  }else{
+   const mark=document.createElement("button");
+   mark.className="success";
+   mark.textContent="Mark as Paid";
+   mark.disabled=data.earned<=0;
+
+   mark.onclick=()=>markPaid(data.key,data.earned);
+
+   actions.append(mark);
+  }
+
+  card.append(actions);
+  root.append(card);
+ });
+
+ $("yearEarned").textContent=money(totalEarned);
+ $("yearReceived").textContent=money(totalReceived);
+ $("yearOutstanding").textContent=money(totalOutstanding);
+ $("yearPaidMonths").textContent=paidMonths+" / 12";
+
+ $("yearTotal").textContent=money(totalEarned);
+ $("yearHours").textContent=fmt(totalHours);
+ $("yearDays").textContent=totalDays;
+}
+
+/* PAYMENT MANAGEMENT */
+
+function markPaid(key,amount){
+ const date=prompt(
+  "Enter the actual salary received date (YYYY-MM-DD):",
+  today()
+ );
+
+ if(date===null)return;
+
+ if(!/^\d{4}-\d{2}-\d{2}$/.test(date)){
+  alert("Invalid date. Please use YYYY-MM-DD.");
+  return;
+ }
+
+ const parsed=new Date(date+"T12:00:00");
+
+ if(isNaN(parsed.getTime())||
+  parsed.toISOString().slice(0,10)!==date){
+  alert("Please enter a valid calendar date.");
+  return;
+ }
+
+ if(payments[key]?.paid){
+  alert("This month has already been marked as paid.");
+  return;
+ }
+
+ const previous=payments;
+
+ payments={
+  ...payments,
+  [key]:{
+   paid:true,
+   date,
+   amount:Number(amount.toFixed(2))
+  }
+ };
+
+ try{
+  persist();
+  renderMonthly();
+  alert("Payment recorded successfully!");
+ }catch(e){
+  payments=previous;
+  alert("Unable to save payment.");
+ }
+}
+
+function undoPayment(key){
+ if(!confirm("Change this month's payment status back to UNPAID?"))return;
+
+ const previous=payments;
+ payments={...payments};
+ delete payments[key];
+
+ try{
+persist();
+  renderMonthly();
+ }catch(e){
+  payments=previous;
+  alert("Unable to update payment status.");
+ }
+}
+
+/* WORK HISTORY */
+
 function render(){
  const month=$("filterYear").value+"-"+$("filterMonth").value;
- const rows=entries.filter(e=>e.date.startsWith(month)).sort((a,b)=>b.date.localeCompare(a.date));
- const total=rows.reduce((sum,e)=>sum+duration(e.start,e.end,e.break),0);
+
+ const rows=entries
+  .filter(e=>e.date.startsWith(month))
+  .sort((a,b)=>b.date.localeCompare(a.date));
+
+ const total=rows.reduce((sum,e)=>{
+  return sum+duration(e.start,e.end,e.break);
+ },0);
+
  $("days").textContent=new Set(rows.map(e=>e.date)).size;
  $("hours").textContent=fmt(total);
  $("salary").textContent=money(total*rate);
+
  const root=$("records");
  root.replaceChildren();
+
  if(!rows.length){
   const p=document.createElement("p");
   p.className="muted";
   p.textContent="No work records for this month.";
   root.append(p);
  }
+
  for(const e of rows){
   const h=duration(e.start,e.end,e.break);
+
   const wrap=document.createElement("div");
   wrap.className="record";
+
   const left=document.createElement("div");
+
   const title=document.createElement("div");
   title.className="record-title";
-  title.textContent=new Date(e.date+"T12:00:00").toLocaleDateString("en-MY",{weekday:"short",day:"numeric",month:"short",year:"numeric"});
+  title.textContent=new Date(e.date+"T12:00:00")
+   .toLocaleDateString("en-MY",{
+    weekday:"short",
+    day:"numeric",
+    month:"short",
+    year:"numeric"
+   });
+
   const detail=document.createElement("div");
   detail.className="record-detail";
-  detail.textContent=e.start+" – "+e.end+" · Break "+e.break+" min · "+fmt(h)+" hrs";
+  detail.textContent=
+   e.start+" – "+e.end+
+   " · Break "+e.break+" min · "+
+   fmt(h)+" hrs";
+
   left.append(title,detail);
+
   const right=document.createElement("div");
   right.className="record-right";
+
   const pay=document.createElement("div");
   pay.className="record-pay";
   pay.textContent=money(h*rate);
+
   const mini=document.createElement("div");
   mini.className="mini";
+
   const editBtn=document.createElement("button");
   editBtn.className="secondary";
   editBtn.textContent="Edit";
   editBtn.onclick=()=>edit(e.id);
+
   const delBtn=document.createElement("button");
   delBtn.className="danger";
   delBtn.textContent="Delete";
   delBtn.onclick=()=>remove(e.id);
+
   mini.append(editBtn,delBtn);
   right.append(pay,mini);
+
   wrap.append(left,right);
   root.append(wrap);
  }
 }
+
+/* EDIT RECORD */
+
 function edit(id){
  const e=entries.find(x=>x.id===id);
  if(!e)return;
+
+ const monthKey=e.date.slice(0,7);
+
+ if(payments[monthKey]?.paid){
+  alert("This month is already marked as paid. Undo payment first before editing its records.");
+  return;
+ }
+
  editId=id;
- ["date","start","end"].forEach(k=>$(k).value=e[k]);
+
+ ["date","start","end"].forEach(k=>{
+  $(k).value=e[k];
+ });
+
  $("break").value=e.break;
  $("save").textContent="Update Work Day";
  $("cancel").hidden=false;
  $("notice").textContent="Editing record";
+
  calc();
  window.scrollTo({top:0,behavior:"smooth"});
 }
+
 function reset(){
  editId=null;
  $("form").reset();
@@ -280,25 +766,59 @@ function reset(){
  $("cancel").hidden=true;
  calc();
 }
+
+/* DELETE RECORD */
+
 function remove(id){
  if(!confirm("Delete this work record?"))return;
+
+ const entry=entries.find(e=>e.id===id);
+
+ if(entry&&payments[entry.date.slice(0,7)]?.paid){
+  alert("This month's salary has already been marked as paid. Undo payment first before deleting records.");
+  return;
+ }
+
  const previous=entries;
  entries=entries.filter(e=>e.id!==id);
- try{persist();render();}
- catch(e){entries=previous;alert("Unable to delete record.");}
+
+ try{
+  persist();
+  render();
+  renderMonthly();
+ }catch(e){
+  entries=previous;
+  alert("Unable to delete record.");
+ }
 }
+
+/* SAVE WORK DAY */
+
 $("form").onsubmit=event=>{
  event.preventDefault();
+
  const h=calc();
  const date=$("date").value;
  const br=Number($("break").value);
- if(!date||!Number.isFinite(h)||h<=0||!Number.isInteger(br)||br<0||br>1440){
+
+ if(!date||!Number.isFinite(h)||h<=0||
+  !Number.isInteger(br)||br<0||br>1440){
   $("notice").textContent="Please check date, times and break.";
   return;
  }
+
+ const monthKey=date.slice(0,7);
+
+ if(payments[monthKey]?.paid){
+  $("notice").textContent=
+   "This month is already marked as paid. Undo payment first.";
+  return;
+ }
+
  if(entries.some(e=>e.date===date&&e.id!==editId)){
   if(!confirm("A record already exists for this date. Save another shift?"))return;
  }
+
  const obj={
   id:editId||String(Date.now())+Math.random().toString(36).slice(2),
   date,
@@ -306,91 +826,234 @@ $("form").onsubmit=event=>{
   end:$("end").value,
   break:br
  };
+
  const previous=entries;
- entries=editId?entries.map(e=>e.id===editId?obj:e):[...entries,obj];
- try{persist();}
- catch(e){
+
+ entries=editId
+  ?entries.
+map(e=>e.id===editId?obj:e)
+  :[...entries,obj];
+
+ try{
+  persist();
+ }catch(e){
   entries=previous;
   $("notice").textContent="Unable to save. Check browser storage.";
   return;
  }
+
  reset();
+
+ populateYears(Number(date.slice(0,4)));
+
  $("filterYear").value=date.slice(0,4);
- if(!$("filterYear").value)populateYears(Number(date.slice(0,4)));
+ $("salaryYear").value=date.slice(0,4);
  $("filterMonth").value=date.slice(5,7);
+
  render();
-$("notice").textContent="Saved successfully on this device ✓";
+ renderMonthly();
+
+ $("notice").textContent="Saved successfully on this device ✓";
 };
+
+/* FORM EVENTS */
+
 $("cancel").onclick=reset;
-["start","end","break"].forEach(id=>$(id).addEventListener("input",calc));
+
+["start","end","break"].forEach(id=>{
+ $(id).addEventListener("input",calc);
+});
+
 $("filterMonth").onchange=render;
+
 $("filterYear").onchange=render;
+
+$("salaryYear").onchange=renderMonthly;
+
+/* HOURLY RATE */
+
 $("rate").onchange=()=>{
  const v=Number($("rate").value);
+
  if(!(v>0)){
   alert("Enter a valid hourly rate.");
   $("rate").value=rate;
   return;
  }
+
  const old=rate;
  rate=v;
- try{persist();calc();render();}
- catch(e){rate=old;$("rate").value=old;alert("Unable to save rate.");}
+
+ try{
+  persist();
+  calc();
+  render();
+  renderMonthly();
+ }catch(e){
+  rate=old;
+  $("rate").value=old;
+  alert("Unable to save rate.");
+ }
 };
+
+/* DOWNLOAD */
+
 function download(name,content,type){
  const blob=new Blob([content],{type});
  const url=URL.createObjectURL(blob);
+
  const a=document.createElement("a");
  a.href=url;
  a.download=name;
+
  document.body.append(a);
  a.click();
  a.remove();
+
  setTimeout(()=>URL.revokeObjectURL(url),3000);
 }
+
+/* BACKUP */
+
 $("backup").onclick=()=>{
- download("crocs-backup-"+today()+".json",JSON.stringify({version:1,rate,entries},null,2),"application/json");
+ download(
+  "crocs-backup-"+today()+".json",
+  JSON.stringify({
+   version:2,
+   rate,
+   entries,
+   payments
+  },null,2),
+  "application/json"
+ );
 };
-$("restoreBtn").onclick=()=>$("restore").click();
+
+/* RESTORE */
+
+$("restoreBtn").onclick=()=>{
+ $("restore").click();
+};
+
 $("restore").onchange=async event=>{
  const file=event.target.files[0];
  if(!file)return;
+
  try{
   const data=JSON.parse(await file.text());
-  if(!Array.isArray(data.entries)||!data.entries.every(e=>
-   typeof e.id==="string"&&
-   /^\d{4}-\d{2}-\d{2}$/.test(e.date)&&
-   Number.isFinite(duration(e.start,e.end,e.break))&&
-   duration(e.start,e.end,e.break)>0
-  ))throw Error("Invalid backup");
-  if(!confirm("Replace ALL current records with this backup?"))return;
-  const oldEntries=entries,oldRate=rate;
+
+  if(!Array.isArray(data.entries)||
+   !data.entries.every(e=>
+    typeof e.id==="string"&&
+    /^\d{4}-\d{2}-\d{2}$/.test(e.date)&&
+    Number.isFinite(duration(e.start,e.end,e.break))&&
+    duration(e.start,e.end,e.break)>0&&
+    Number.isInteger(Number(e.break))&&
+    Number(e.break)>=0&&Number(e.break)<=1440
+   )){
+   throw Error("Invalid backup");
+  }
+
+  const restoredPayments=data.payments||{};
+
+  if(typeof restoredPayments!=="object"||
+   Array.isArray(restoredPayments)){
+   throw Error("Invalid payment data");
+  }
+
+  for(const [key,p] of Object.entries(restoredPayments)){
+   if(!/^\d{4}-\d{2}$/.test(key)||
+    typeof p!=="object"||
+    typeof p.paid!=="boolean"||
+    (p.paid&&(
+     !/^\d{4}-\d{2}-\d{2}$/.test(p.date)||
+     !Number.isFinite(Number(p.amount))||
+     Number(p.amount)<0
+    ))){
+    throw Error("Invalid payment data");
+   }
+  }
+
+  if(!confirm("Replace ALL current records and payment data with this backup?"))return;
+
+  const oldEntries=entries;
+  const oldRate=rate;
+  const oldPayments=payments;
+
   entries=data.entries;
   rate=Number(data.rate)>0?Number(data.rate):10;
-  try{persist();}
-  catch(e){entries=oldEntries;rate=oldRate;throw e;}
+  payments=restoredPayments;
+
+  try{
+   persist();
+  }catch(e){
+   entries=oldEntries;
+   rate=oldRate;
+   payments=oldPayments;
+   throw e;
+  }
+
   $("rate").value=rate;
-  populateYears(Number($("filterYear").value)||new Date().getFullYear());
-  render();calc();
+
+  populateYears(Number(today().slice(0,4)));
+
+  $("filterYear").value=String(new Date().getFullYear());
+  $("salaryYear").value=String(new Date().getFullYear());
+
+  render();
+  renderMonthly();
+  calc();
+
   alert("Backup restored successfully.");
- }catch(e){alert("Unable to restore backup.");}
- finally{event.target.value="";}
+
+ }catch(e){
+  alert("Unable to restore backup. Please check the file.");
+ }finally{
+  event.target.value="";
+ }
 };
+
+/* EXPORT CSV */
+
 $("csv").onclick=()=>{
  const quote=v=>'"'+String(v).replaceAll('"','""')+'"';
+
  const lines=[
-  ["Date","Clock In","Clock Out","Break Minutes","Paid Hours","Rate RM","Salary RM"],
-  ...entries.slice().sort((a,b)=>a.date.localeCompare(b.date)).map(e=>{
-   const h=duration(e.start,e.end,e.break);
-   return[e.date,e.start,e.end,e.break,h.toFixed(2),rate,(h*rate).toFixed(2)];
-  })
+  [
+   "Date","Clock In","Clock Out","Break Minutes",
+   "Paid Hours","Rate RM","Salary RM",
+   "Payment Status","Payment Date"
+  ],
+
+  ...entries.slice()
+   .sort((a,b)=>a.date.localeCompare(b.date))
+   .map(e=>{
+    const h=duration(e.start,e.end,e.break);
+    const payment=payments[e.date.slice(0,7)];
+
+    return[
+     e.date,e.start,e.end,e.break,
+     h.toFixed(2),rate,
+     (h*rate).toFixed(2),
+     payment?.paid?"Paid":"Unpaid",
+     payment?.paid?payment.date:""
+    ];
+   })
  ];
- download("crocs-hours-"+today()+".csv",
-  "\ufeff"+lines.map(row=>row.map(quote).join(",")).join("\r\n"),
-  "text/csv;charset=utf-8");
+
+ download(
+  "crocs-hours-"+today()+".csv",
+  "\ufeff"+lines.map(row=>row.map(quote).join(",")).
+join("\r\n"),
+  "text/csv;charset=utf-8"
+ );
 };
+
+/* INITIAL DISPLAY */
+
 calc();
 render();
+renderMonthly();
+
 })();
 </script>
 </body>
