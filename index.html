@@ -81,6 +81,7 @@ button{
 .secondary{background:#e9eef8;color:#233759}
 .danger{background:#fff0ef;color:#b42318}
 .success{background:#def5e8;color:#167246}
+.double-pay-active{background:#192235;color:#fff;border:2px solid #3156c8}
 .buttons{display:flex;flex-wrap:wrap;gap:9px}
 .buttons button{flex:1 1 130px}
 #notice{font-size:13px;color:#167246;margin-top:12px;min-height:16px}
@@ -469,7 +470,10 @@ function getMonthData(year,month){
 
  const days=new Set(rows.map(e=>e.date)).size;
 
- const earned=hours*rate;
+ const earned=rows.reduce((sum,e)=>{
+  const h=duration(e.start,e.end,e.break);
+  return sum+h*rate*(e.doublePay?2:1);
+ },0);
  const payment=payments[key]||null;
  const paid=!!(payment&&payment.paid);
 
@@ -660,10 +664,13 @@ function render(){
  const total=rows.reduce((sum,e)=>{
   return sum+duration(e.start,e.end,e.break);
  },0);
+ const totalSalary=rows.reduce((sum,e)=>{
+  return sum+duration(e.start,e.end,e.break)*rate*(e.doublePay?2:1);
+ },0);
 
  $("days").textContent=new Set(rows.map(e=>e.date)).size;
  $("hours").textContent=fmt(total);
- $("salary").textContent=money(total*rate);
+ $("salary").textContent=money(totalSalary);
 
  const root=$("records");
  root.replaceChildren();
@@ -698,7 +705,7 @@ function render(){
   detail.textContent=
    e.start+" – "+e.end+
    " · Break "+e.break+" min · "+
-   fmt(h)+" hrs";
+   fmt(h)+" hrs"+(e.doublePay?" · DOUBLE PAY (2×)":"");
 
   left.append(title,detail);
 
@@ -707,7 +714,7 @@ function render(){
 
   const pay=document.createElement("div");
   pay.className="record-pay";
-  pay.textContent=money(h*rate);
+  pay.textContent=money(h*rate*(e.doublePay?2:1));
 
   const mini=document.createElement("div");
   mini.className="mini";
@@ -717,16 +724,38 @@ function render(){
   editBtn.textContent="Edit";
   editBtn.onclick=()=>edit(e.id);
 
+  const doubleBtn=document.createElement("button");
+  doubleBtn.className=e.doublePay?"success":"secondary";
+  doubleBtn.textContent=e.doublePay?"Double Pay ✓":"Mark Double Pay";
+  doubleBtn.onclick=()=>toggleDoublePay(e.id);
+
   const delBtn=document.createElement("button");
   delBtn.className="danger";
   delBtn.textContent="Delete";
   delBtn.onclick=()=>remove(e.id);
 
-  mini.append(editBtn,delBtn);
+  mini.append(editBtn,doubleBtn,delBtn);
   right.append(pay,mini);
 
   wrap.append(left,right);
   root.append(wrap);
+ }
+}
+
+/* DOUBLE PAY */
+
+function toggleDoublePay(id){
+ const index=entries.findIndex(e=>e.id===id);
+ if(index<0)return;
+ const previous=entries;
+ entries=entries.map(e=>e.id===id?{...e,doublePay:!e.doublePay}:e);
+ try{
+  persist();
+  render();
+  renderMonthly();
+ }catch(err){
+  entries=previous;
+  alert("Unable to update double pay status.");
  }
 }
 
@@ -824,7 +853,8 @@ $("form").onsubmit=event=>{
   date,
   start:$("start").value,
   end:$("end").value,
-  break:br
+  break:br,
+  doublePay:editId?!!entries.find(e=>e.id===editId)?.doublePay:false
  };
 
  const previous=entries;
@@ -1020,7 +1050,7 @@ $("csv").onclick=()=>{
  const lines=[
   [
    "Date","Clock In","Clock Out","Break Minutes",
-   "Paid Hours","Rate RM","Salary RM",
+   "Paid Hours","Rate RM","Double Pay","Salary RM",
    "Payment Status","Payment Date"
   ],
 
@@ -1033,7 +1063,8 @@ $("csv").onclick=()=>{
     return[
      e.date,e.start,e.end,e.break,
      h.toFixed(2),rate,
-     (h*rate).toFixed(2),
+     e.doublePay?"Yes (2x)":"No",
+     (h*rate*(e.doublePay?2:1)).toFixed(2),
      payment?.paid?"Paid":"Unpaid",
      payment?.paid?payment.date:""
     ];
