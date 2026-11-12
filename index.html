@@ -547,8 +547,15 @@ function renderMonthly(){
    const date=document.createElement("div");
    date.className="payment-date";
    date.textContent="Received on "+data.payment.date+
-    " · "+money(data.payment.amount);
-   card.append(date);
+    " · Net received: "+money(data.payment.amount);
+   const deductions=document.createElement("div");
+   deductions.className="month-info";
+   deductions.textContent=
+    "EPF: "+money(data.payment.epf||0)+
+    " · SOCSO: "+money(data.payment.socso||0)+
+    " · EIS: "+money(data.payment.eis||0)+
+    " · Total deductions: "+money((data.payment.epf||0)+(data.payment.socso||0)+(data.payment.eis||0));
+   card.append(date,deductions);
   }
 
   const actions=document.createElement("div");
@@ -594,38 +601,50 @@ function markPaid(key,amount){
   "Enter the actual salary received date (YYYY-MM-DD):",
   today()
  );
-
  if(date===null)return;
-
- if(!/^\d{4}-\d{2}-\d{2}$/.test(date)){
+ if(!/^\\d{4}-\\d{2}-\\d{2}$/.test(date)){
   alert("Invalid date. Please use YYYY-MM-DD.");
   return;
  }
-
  const parsed=new Date(date+"T12:00:00");
-
- if(isNaN(parsed.getTime())||
-  parsed.toISOString().slice(0,10)!==date){
+ if(isNaN(parsed.getTime())||parsed.toISOString().slice(0,10)!==date){
   alert("Please enter a valid calendar date.");
   return;
  }
-
  if(payments[key]?.paid){
   alert("This month has already been marked as paid.");
   return;
  }
 
- const previous=payments;
+ const askAmount=(label,defaultValue)=>{
+  const raw=prompt("Enter "+label+" (RM):",String(defaultValue));
+  if(raw===null)return null;
+  const value=Number(raw);
+  if(!Number.isFinite(value)||value<0){
+   alert("Please enter a valid non-negative amount for "+label+".");
+   return NaN;
+  }
+  return Number(value.toFixed(2));
+ };
 
+ const epf=askAmount("EPF deduction",0);
+ if(epf===null||Number.isNaN(epf))return;
+ const socso=askAmount("SOCSO deduction",0);
+ if(socso===null||Number.isNaN(socso))return;
+ const eis=askAmount("EIS deduction",0);
+ if(eis===null||Number.isNaN(eis))return;
+ const suggestedNet=Math.max(0,amount-epf-socso-eis);
+ const net=askAmount("actual net salary received (take-home pay)",suggestedNet);
+ if(net===null||Number.isNaN(net))return;
+
+ const previous=payments;
  payments={
   ...payments,
   [key]:{
-   paid:true,
-   date,
-   amount:Number(amount.toFixed(2))
+   paid:true,date,amount:net,epf,socso,eis,
+   grossAmount:Number(amount.toFixed(2))
   }
  };
-
  try{
   persist();
   renderMonthly();
@@ -1050,7 +1069,8 @@ $("csv").onclick=()=>{
  const lines=[
   [
    "Date","Clock In","Clock Out","Break Minutes",
-   "Paid Hours","Rate RM","Double Pay","Salary RM",
+   "Paid Hours","Rate RM","Double Pay","Gross Salary RM",
+   "EPF RM","SOCSO RM","EIS RM","Net Salary Received RM",
    "Payment Status","Payment Date"
   ],
 
@@ -1065,6 +1085,11 @@ $("csv").onclick=()=>{
      h.toFixed(2),rate,
      e.doublePay?"Yes (2x)":"No",
      (h*rate*(e.doublePay?2:1)).toFixed(2),
+     payment?.paid?Number(payment.grossAmount??(h*rate*(e.doublePay?2:1))).toFixed(2):"",
+     payment?.paid?Number(payment.epf||0).toFixed(2):"",
+     payment?.paid?Number(payment.socso||0).toFixed(2):"",
+     payment?.paid?Number(payment.eis||0).toFixed(2):"",
+     payment?.paid?Number(payment.amount||0).toFixed(2):"",
      payment?.paid?"Paid":"Unpaid",
      payment?.paid?payment.date:""
     ];
