@@ -272,6 +272,22 @@ align-items:flex-start;gap:10px
    <span>Paid Months</span>
    <strong id="yearPaidMonths">0 / 12</strong>
   </div>
+  <div class="summary-box">
+   <span>Total EPF Deducted</span>
+   <strong id="yearEPF">RM0.00</strong>
+  </div>
+  <div class="summary-box">
+   <span>Total SOCSO Deducted</span>
+   <strong id="yearSOCSO">RM0.00</strong>
+  </div>
+  <div class="summary-box">
+   <span>Total EIS Deducted</span>
+   <strong id="yearEIS">RM0.00</strong>
+  </div>
+  <div class="summary-box">
+   <span>Total Deductions</span>
+   <strong id="yearDeductions">RM0.00</strong>
+  </div>
  </div>
 
  <div id="monthlyRecords"></div>
@@ -531,6 +547,9 @@ function renderMonthly(){
  let totalHours=0;
  let totalDays=0;
  let paidMonths=0;
+ let totalEPF=0;
+ let totalSOCSO=0;
+ let totalEIS=0;
 
  MONTHS.forEach((month,index)=>{
   const data=getMonthData(year,index+1);
@@ -541,7 +560,12 @@ function renderMonthly(){
   totalHours+=data.hours;
   totalDays+=data.days;
 
-  if(data.paid)paidMonths++;
+  if(data.paid){
+   paidMonths++;
+   totalEPF+=Number(data.payment?.epf||0);
+   totalSOCSO+=Number(data.payment?.socso||0);
+   totalEIS+=Number(data.payment?.eis||0);
+  }
 
   const card=document.createElement("div");
   card.className="month-card";
@@ -620,6 +644,10 @@ function renderMonthly(){
  $("yearReceived").textContent=money(totalReceived);
  $("yearOutstanding").textContent=money(totalOutstanding);
  $("yearPaidMonths").textContent=paidMonths+" / 12";
+ $("yearEPF").textContent=money(totalEPF);
+ $("yearSOCSO").textContent=money(totalSOCSO);
+ $("yearEIS").textContent=money(totalEIS);
+ $("yearDeductions").textContent=money(totalEPF+totalSOCSO+totalEIS);
 
  $("yearTotal").textContent=money(totalEarned);
  $("yearHours").textContent=fmt(totalHours);
