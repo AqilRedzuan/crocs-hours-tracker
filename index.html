@@ -100,6 +100,19 @@ button{
 .mini button{font-size:12px;min-height:32px;padding:7px 9px;border-radius:8px}
 .footer{color:#68748a;font-size:12px;line-height:1.7}
 [hidden]{display:none!important}
+.date-modal{
+ position:fixed;inset:0;z-index:9999;background:rgba(15,23,42,.48);
+ display:flex;align-items:center;justify-content:center;padding:20px
+}
+.date-modal-box{
+ width:100%;max-width:420px;background:#fff;border-radius:18px;
+ padding:22px;box-shadow:0 18px 50px rgba(0,0,0,.2)
+}
+.date-modal-box h3{font-size:18px;margin:0 0 8px}
+.date-modal-box p{font-size:13px;color:#68748a;margin:0 0 16px}
+.date-modal-box input{margin-bottom:16px}
+.date-modal-actions{display:flex;gap:9px}
+.date-modal-actions button{flex:1}
 
 /* Monthly salary */
 .salary-summary{
@@ -337,6 +350,18 @@ align-items:flex-start;gap:10px
 </p>
 
 </main>
+
+<div class="date-modal" id="dateModal" hidden>
+ <div class="date-modal-box">
+  <h3>Salary Received Date</h3>
+  <p>Select the date you actually received your salary.</p>
+  <input type="date" id="receivedDate">
+  <div class="date-modal-actions">
+   <button type="button" class="secondary" id="dateCancel">Cancel</button>
+   <button type="button" class="primary" id="dateConfirm">Continue</button>
+  </div>
+ </div>
+</div>
 
 <script>
 (()=>{
@@ -596,21 +621,34 @@ function renderMonthly(){
 
 /* PAYMENT MANAGEMENT */
 
-function markPaid(key,amount){
- const date=prompt(
-  "Enter the actual salary received date (YYYY-MM-DD):",
-  today()
- );
+function chooseReceivedDate(){
+ return new Promise(resolve=>{
+  const modal=$("dateModal");
+  const input=$("receivedDate");
+  input.value=today();
+  modal.hidden=false;
+  const finish=value=>{
+   modal.hidden=true;
+   $("dateCancel").onclick=null;
+   $("dateConfirm").onclick=null;
+   resolve(value);
+  };
+  $("dateCancel").onclick=()=>finish(null);
+  $("dateConfirm").onclick=()=>{
+   if(!input.value){
+    alert("Please select the salary received date.");
+    return;
+   }
+   finish(input.value);
+  };
+  input.focus();
+ });
+}
+
+async function markPaid(key,amount){
+ const date=await chooseReceivedDate();
  if(date===null)return;
- if(!/^\\d{4}-\\d{2}-\\d{2}$/.test(date)){
-  alert("Invalid date. Please use YYYY-MM-DD.");
-  return;
- }
- const parsed=new Date(date+"T12:00:00");
- if(isNaN(parsed.getTime())||parsed.toISOString().slice(0,10)!==date){
-  alert("Please enter a valid calendar date.");
-  return;
- }
+
  if(payments[key]?.paid){
   alert("This month has already been marked as paid.");
   return;
