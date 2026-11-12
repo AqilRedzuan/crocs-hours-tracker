@@ -353,9 +353,9 @@ align-items:flex-start;gap:10px
 
 <div class="date-modal" id="dateModal" hidden>
  <div class="date-modal-box">
-  <h3>Salary Received Date</h3>
-  <p>Select the date you actually received your salary.</p>
-  <input type="date" id="receivedDate">
+  <h3>Select Salary Received Date</h3>
+  <p>Choose the date from the calendar. No date typing required.</p>
+  <input type="date" id="receivedDate" aria-label="Salary received date">
   <div class="date-modal-actions">
    <button type="button" class="secondary" id="dateCancel">Cancel</button>
    <button type="button" class="primary" id="dateConfirm">Continue</button>
@@ -635,11 +635,12 @@ function chooseReceivedDate(){
   };
   $("dateCancel").onclick=()=>finish(null);
   $("dateConfirm").onclick=()=>{
-   if(!input.value){
-    alert("Please select the salary received date.");
+   const selectedDate=input.value;
+   if(!selectedDate || !/^\\d{4}-\\d{2}-\\d{2}$/.test(selectedDate)){
+    alert("Please choose a valid date from the calendar.");
     return;
    }
-   finish(input.value);
+   finish(selectedDate);
   };
   input.focus();
  });
