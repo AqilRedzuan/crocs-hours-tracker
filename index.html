@@ -111,6 +111,9 @@ button{
 .date-modal-box h3{font-size:18px;margin:0 0 8px}
 .date-modal-box p{font-size:13px;color:#68748a;margin:0 0 16px}
 .date-modal-box input{margin-bottom:16px}
+.date-select-grid{display:grid;grid-template-columns:1fr 1.4fr 1.2fr;gap:8px;margin:14px 0 20px}
+.date-select-grid label{font-size:12px;margin-bottom:6px}
+.date-select-grid select{height:48px;padding:8px 5px;font-size:15px}
 .date-modal-actions{display:flex;gap:9px}
 .date-modal-actions button{flex:1}
 
@@ -354,8 +357,12 @@ align-items:flex-start;gap:10px
 <div class="date-modal" id="dateModal" hidden>
  <div class="date-modal-box">
   <h3>Select Salary Received Date</h3>
-  <p>Choose the date from the calendar. No date typing required.</p>
-  <input type="date" id="receivedDate" aria-label="Salary received date">
+  <p>Choose day, month and year. No typing needed.</p>
+  <div class="date-select-grid">
+   <div><label for="receivedDay">Day</label><select id="receivedDay"></select></div>
+   <div><label for="receivedMonth">Month</label><select id="receivedMonth"></select></div>
+   <div><label for="receivedYear">Year</label><select id="receivedYear"></select></div>
+  </div>
   <div class="date-modal-actions">
    <button type="button" class="secondary" id="dateCancel">Cancel</button>
    <button type="button" class="primary" id="dateConfirm">Continue</button>
@@ -624,25 +631,45 @@ function renderMonthly(){
 function chooseReceivedDate(){
  return new Promise(resolve=>{
   const modal=$("dateModal");
-  const input=$("receivedDate");
-  input.value=today();
+  const day=$("receivedDay"), month=$("receivedMonth"), year=$("receivedYear");
+  const now=new Date();
+  const fill=(el,items)=>{
+   el.replaceChildren();
+   items.forEach(([value,label])=>{
+    const option=document.createElement("option");
+    option.value=String(value);
+    option.textContent=String(label);
+    el.append(option);
+   });
+  };
+  fill(month,MONTHS.map((name,i)=>[i+1,name]));
+  fill(year,Array.from({length:16},(_,i)=>[2020+i,2020+i]));
+  year.value=String(now.getFullYear());
+  month.value=String(now.getMonth()+1);
+  const fillDays=()=>{
+   const selected=day.value;
+   const max=new Date(Number(year.value),Number(month.value),0).getDate();
+   fill(day,Array.from({length:max},(_,i)=>[i+1,i+1]));
+   day.value=String(Math.min(Number(selected)||now.getDate(),max));
+  };
+  fillDays();
+  day.value=String(now.getDate());
+  month.onchange=fillDays;
+  year.onchange=fillDays;
   modal.hidden=false;
   const finish=value=>{
    modal.hidden=true;
+   month.onchange=null;
+   year.onchange=null;
    $("dateCancel").onclick=null;
    $("dateConfirm").onclick=null;
    resolve(value);
   };
   $("dateCancel").onclick=()=>finish(null);
   $("dateConfirm").onclick=()=>{
-   const selectedDate=input.value;
-   if(!selectedDate || !/^\d{4}-\d{2}-\d{2}$/.test(selectedDate)){
-    alert("Please choose a valid date from the calendar.");
-    return;
-   }
-   finish(selectedDate);
+   const value=year.value+"-"+month.value.padStart(2,"0")+"-"+day.value.padStart(2,"0");
+   finish(value);
   };
-  input.focus();
  });
 }
 
